@@ -177,7 +177,7 @@ ax8=sns.barplot(data=race_dnf_df.loc[race_dnf_df['Number of races'] >5].sort_val
 ax8.set_xticklabels(ax8.get_xticklabels(), rotation=90)
 #driver dnf per racer
 v = df_for_dnf_s['Full name'].value_counts().head(20)
-#asd=df_for_dnf_s[df_for_dnf_s['Full name'].isin(v.index[v.gt(60)])]
+#calc1=df_for_dnf_s[df_for_dnf_s['Full name'].isin(v.index[v.gt(60)])]
 sns.catplot(data=df_for_dnf_s[df_for_dnf_s['Full name'].isin(v.index[v.gt(20)])], y="Full name", hue="DNF", kind="count")
 #constructor overall and one specific team
 #ferrari specific dnfs
@@ -193,17 +193,17 @@ ax9.set_xticklabels(ax9.get_xticklabels(), rotation=90)
 plt.figure(figsize=(14,6))
 df_for_dnf_s.loc[(df_for_dnf_s['Starting_position'] > 0)].groupby('Starting_position').sum()['DNF'].plot(kind="bar")
 #crashes per turn number
-asd=df_for_dnf_s.groupby('Number of turns').sum()['DNF']
-dsa=df_for_dnf_s['Number of turns'].value_counts()
-merged= pd.merge(asd, dsa, how='inner', left_index=True, right_index=True) 
+calc1=df_for_dnf_s.groupby('Number of turns').sum()['DNF']
+calc2=df_for_dnf_s['Number of turns'].value_counts()
+merged= pd.merge(calc1, calc2, how='inner', left_index=True, right_index=True) 
 merged['ratio that crashed']=merged['DNF']/merged['Number of turns']
 ax20=sns.scatterplot(data=merged.reset_index(), x="index", y='ratio that crashed')
 ax20.set(xlabel='Number of turns')
 
 df_for_dnf_s['Total length']=df_for_dnf_s['Max_laps']*df_for_dnf_s['Length']
-asd=df_for_dnf_s.groupby('Total length').sum()['DNF']
-dsa=df_for_dnf_s['Total length'].value_counts()
-merged= pd.merge(asd, dsa, how='inner', left_index=True, right_index=True) 
+calc1=df_for_dnf_s.groupby('Total length').sum()['DNF']
+calc2=df_for_dnf_s['Total length'].value_counts()
+merged= pd.merge(calc1, calc2, how='inner', left_index=True, right_index=True) 
 merged['ratio that did not finish']=merged['DNF']/merged['Total length']
 ax20=sns.scatterplot(data=merged.reset_index(), x="index", y='ratio that did not finish')
 ax20.set(xlabel='Total length')
@@ -219,6 +219,14 @@ ax8.set_xticklabels(ax8.get_xticklabels(), rotation=90)
 
 
 df_for_dnf_s['Length']=df_for_dnf_s['Length'].str[:5].astype(float)
+
+calc1=df_for_dnf_s.groupby('Age').count()['DNF'].reset_index()
+calc1['number']=df_for_dnf_s.groupby('Age').sum()['DNF'].reset_index()['DNF']
+
+calc1['calc']=calc1['number']/calc1['DNF']
+plt.figure(figsize=(14,6))
+ax21=sns.barplot(data=calc1, x='Age', y="calc")
+ax21.set(ylabel='ratio that did not finish')
 #%%
 #for drivers
 df_for_dnf_s=df_for_dnf_s.sort_values(['driverId', 'year','raceId'],ascending = [True, True, True])
@@ -238,15 +246,6 @@ df_for_dnf_s['Constructor DNF ratio']=df_for_dnf_s['Constructor DNF accoumulatei
 #for circuits
 df_for_dnf_s=df_for_dnf_s.sort_values(['circuitId', 'year','raceId'],ascending = [True, True, True])
 df_for_dnf_s['Circuit DNF accoumulateion']=df_for_dnf_s.groupby(['circuitId'])['DNF'].cumsum()
-
-#%%
-df_for_dnf_s.to_excel('')
-asd=df_for_dnf_s.groupby('Age').count()['DNF'].reset_index()
-asd['number']=df_for_dnf_s.groupby('Age').sum()['DNF'].reset_index()['DNF']
-
-asd['calc']=asd['DNF']/asd['number']
-plt.figure(figsize=(14,6))
-sns.barplot(data=asd, x='Age', y="calc")
 #%%feature selection
 numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
 
